@@ -1,0 +1,9 @@
+zig-cache/
+zig-out/
+dev-thingies/
+kcov-output/
+release/
+output.svg
+output.tga
+# we will construct the SDK in the CI
+sdk-release/

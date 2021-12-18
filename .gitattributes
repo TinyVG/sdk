@@ -1,0 +1,4 @@
+lib/**/* linguist-vendored
+documents/* linguist-documentation
+*.zig text=auto eol=lf
+examples/* linguist-generated	
