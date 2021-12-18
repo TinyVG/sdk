@@ -34,7 +34,7 @@ jobs:
         run: zig build install
 
       - name: Compile Svg2TvgText
-        cwd: src/tools/svg2tvgt/
+        working-directory: src/tools/svg2tvgt/
         run: dotnet build
 
       - name: Run Testsuite
