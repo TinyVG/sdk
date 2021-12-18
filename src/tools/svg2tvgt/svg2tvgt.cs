@@ -867,7 +867,7 @@ public static class SvgConverter
     }
 
     var no_fill = false;
-    var no_stroke = false;
+    // var no_stroke = false;
 
     var fill = style["fill"];
     if (fill != null)
@@ -895,7 +895,7 @@ public static class SvgConverter
       }
       else
       {
-        no_stroke = true;
+        // no_stroke = true;
       }
     }
 

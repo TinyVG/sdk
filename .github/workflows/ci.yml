@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   cross-build:
@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, windows-latest, macos-latest]
+
     runs-on: ${{ matrix.platform }}
 
     steps:
