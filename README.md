@@ -2,13 +2,21 @@
 
 This SDK enables you to work with the [TinyVG](https://tinyvg.tech/) vector graphics format.
 
+## Contents
+
+- Native Library (C ABI)
+- Zig Package
+- Command Line Tooling
+  - Offline Rendering (TVG -> TGA)
+  - Format Conversion (SVG <-> TVG <-> TVGT)
+
 ## Building
 
 The SDK is implemented with [Zig](https://ziglang.org/) and [dotnet 5](https://dotnet.microsoft.com/en-us/). Until Zig 1.0 this repo tracks Zig `master` branch.
 
 To build the SDK (except `svg2tvgt`), do this:
 
-```sh-console
+```sh-session
 [user@host sdk]$ zig build
 [user@host sdk]$
 ```
@@ -17,7 +25,7 @@ This will then produce the folders `zig-cache` (for temporary files) and `zig-ou
 
 To build `svg2tvgt`, go into the folder `src/tools/svg2tvgt` and do this:
 
-```sh-console
+```sh-session
 [user@host sdk]$ cd src/tools/svg2tvgt/
 [user@host svg2tvgt]$ dotnet build
 Microsoft (R) Build Engine version 16.11.1+3e40a09f8 for .NET
