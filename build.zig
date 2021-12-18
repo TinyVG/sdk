@@ -29,26 +29,39 @@ fn initNativeLibrary(lib: *std.build.LibExeObjStep, mode: std.builtin.Mode, targ
 pub fn build(b: *std.build.Builder) !void {
     const www_folder = std.build.InstallDir{ .custom = "www" };
 
+    const install_include = b.option(bool, "install-include", "Installs the include directory") orelse true;
+    const install_www = b.option(bool, "install-www", "Installs the www directory (polyfill)") orelse true;
+    const install_lib = b.option(bool, "install-lib", "Installs the lib directory") orelse true;
+    const install_bin = b.option(bool, "install-bin", "Installs the bin directory") orelse true;
+
     const target = b.standardTargetOptions(.{});
     const mode = b.standardReleaseOptions();
 
     const static_native_lib = b.addStaticLibrary("tinyvg", "src/binding/binding.zig");
     initNativeLibrary(static_native_lib, mode, target);
-    static_native_lib.install();
+    if (install_lib) {
+        static_native_lib.install();
+    }
 
     const dynamic_native_lib = b.addSharedLibrary("tinyvg.dll", "src/binding/binding.zig", .unversioned);
     initNativeLibrary(dynamic_native_lib, mode, target);
-    dynamic_native_lib.install();
+    if (install_lib) {
+        dynamic_native_lib.install();
+    }
 
-    const install_header = b.addInstallFileWithDir(.{ .path = "src/binding/include/tinyvg.h" }, .header, "tinyvg.h");
-    b.getInstallStep().dependOn(&install_header.step);
+    if (install_include) {
+        const install_header = b.addInstallFileWithDir(.{ .path = "src/binding/include/tinyvg.h" }, .header, "tinyvg.h");
+        b.getInstallStep().dependOn(&install_header.step);
+    }
 
     const render = b.addExecutable("tvg-render", "src/tools/render.zig");
     render.setBuildMode(mode);
     render.setTarget(target);
     render.addPackage(pkgs.tvg);
     render.addPackage(pkgs.args);
-    render.install();
+    if (install_bin) {
+        render.install();
+    }
 
     const text = b.addExecutable("tvg-text", "src/tools/text.zig");
     text.setBuildMode(mode);
@@ -56,7 +69,9 @@ pub fn build(b: *std.build.Builder) !void {
     text.addPackage(pkgs.tvg);
     text.addPackage(pkgs.args);
     text.addPackage(pkgs.ptk);
-    text.install();
+    if (install_bin) {
+        text.install();
+    }
 
     const ground_truth_generator = b.addExecutable("ground-truth-generator", "src/data/ground-truth.zig");
     ground_truth_generator.setBuildMode(mode);
@@ -142,10 +157,14 @@ pub fn build(b: *std.build.Builder) !void {
     });
     polyfill.addPackage(pkgs.tvg);
 
-    polyfill.install();
-    polyfill.install_step.?.dest_dir = www_folder;
+    if (install_www) {
+        polyfill.install();
+        polyfill.install_step.?.dest_dir = www_folder;
+    }
 
     const copy_stuff = b.addInstallFileWithDir(.{ .path = "src/polyfill/tinyvg.js" }, www_folder, "tinyvg.js");
 
-    b.getInstallStep().dependOn(&copy_stuff.step);
+    if (install_www) {
+        b.getInstallStep().dependOn(&copy_stuff.step);
+    }
 }
