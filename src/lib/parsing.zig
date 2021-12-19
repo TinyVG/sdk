@@ -167,9 +167,9 @@ pub fn Parser(comptime Reader: type) type {
                             .u565 => blk: {
                                 const rgb = try reader.readIntLittle(u16);
                                 break :blk tvg.Color{
-                                    .r = @intToFloat(f32, (rgb & 0x1F) >> 0) / 31.0,
-                                    .g = @intToFloat(f32, (rgb & 0x3F) >> 5) / 63.0,
-                                    .b = @intToFloat(f32, (rgb & 0x1F) >> 11) / 31.0,
+                                    .r = @intToFloat(f32, (rgb & 0x001F) >> 0) / 31.0,
+                                    .g = @intToFloat(f32, (rgb & 0x07E0) >> 5) / 63.0,
+                                    .b = @intToFloat(f32, (rgb & 0xF800) >> 11) / 31.0,
                                     .a = 1.0,
                                 };
                             },

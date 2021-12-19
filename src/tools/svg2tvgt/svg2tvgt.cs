@@ -1150,6 +1150,10 @@ public class AnalyzeIntermediateBuffer
     {
       colors.Add(Color.FromArgb(0, 0, 0));
     }
+
+    // Console.Error.WriteLine("viewbox = {0} {1} {2} {3}", viewport[0], viewport[1], viewport[2], viewport[3]);
+    // Console.Error.WriteLine("size    = {0} {1}", width, height);
+
     return new AnalyzeResult
     {
       scale_bits = scale_bits,
@@ -1455,7 +1459,7 @@ public class TvgStream : StringWriter
 
   public void WriteSizeX(float x)
   {
-    WriteUnit(x / (ar.image_width / ar.viewport_width));
+    WriteUnit(x * (ar.image_width / ar.viewport_width));
   }
 
   public void WriteCoordX(float x)
@@ -1465,7 +1469,7 @@ public class TvgStream : StringWriter
 
   public void WriteSizeY(float y)
   {
-    WriteUnit(y / (ar.image_height / ar.viewport_height));
+    WriteUnit(y * (ar.image_height / ar.viewport_height));
   }
 
   public void WriteCoordY(float y)
