@@ -4,7 +4,16 @@ const args = @import("args");
 
 fn printUsage(stream: anytype) !void {
     try stream.writeAll(
-        \\tvg-render [-o file] [-g geometry] [-a] [-s <scale>] source.tvg
+        \\tvg-render [-o <file.tga>] [-g <geometry>] [-a] [-s <scale>] <input>
+        \\
+        \\Renders a TinyVG vector graphic into a TGA file. 
+        \\
+        \\Options:
+        \\  -h, --help             Prints this text.
+        \\  -o, --output <file>    The TGA file that should be written. Default is <input> with .tga extension.
+        \\  -g, --geometry         Specifies the output geometry of the image. Has the format <width>x<height>.
+        \\  -s, --super-sampling   Sets the super-sampling size for the image. Use 1 for no super sampling and 16 for very high quality.
+        \\  -a, --anti-alias       Sets the super-sampling size to 4. This is usually decent enough for most images.
         \\
     );
 }

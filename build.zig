@@ -43,7 +43,12 @@ pub fn build(b: *std.build.Builder) !void {
         static_native_lib.install();
     }
 
-    const dynamic_native_lib = b.addSharedLibrary("tinyvg.dll", "src/binding/binding.zig", .unversioned);
+    const dynamic_lib_name = if (target.isWindows())
+        "tinyvg.dll"
+    else
+        "tinyvg";
+
+    const dynamic_native_lib = b.addSharedLibrary(dynamic_lib_name, "src/binding/binding.zig", .unversioned);
     initNativeLibrary(dynamic_native_lib, mode, target);
     if (install_lib) {
         dynamic_native_lib.install();

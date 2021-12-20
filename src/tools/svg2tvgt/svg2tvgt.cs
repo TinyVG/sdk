@@ -33,6 +33,20 @@ class Application
 
   public static void Report(string msg, params object[] args) => ReportError(string.Format(msg, args));
 
+  static void PrintUsage(TextWriter writer)
+  {
+    writer.WriteLine("svg2tvgt [--output <file>] [--strict] [--help] [--verbose] <input>");
+    writer.WriteLine("");
+    writer.WriteLine("Converts SVG files into TinyVG text representation. Use tvg-text to convert output into binary.");
+    writer.WriteLine("");
+    writer.WriteLine("Options");
+    writer.WriteLine("  <input>               The SVG file to convert.");
+    writer.WriteLine("  -h, --help            Prints this text");
+    writer.WriteLine("  -s, --strict          Exit code will signal a failure if the file is not fully supported");
+    writer.WriteLine("  -v, --verbose         Prints some logging information that might show errors in the conversion process");
+    writer.WriteLine("  -o, --output <file>   Writes the output tvgt to <file>. If not given, the output will be <input> with .tvgt extension");
+  }
+
   static int Main(string[] args)
   {
     CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -53,22 +67,23 @@ class Application
           out_file_name = args[i + 1];
           i += 1;
         }
-        else if (arg == "--help")
+        else if (arg == "-h" || arg == "--help")
         {
-          Console.WriteLine("svg2tvgt [--output <file_name>] [--strict] [--verbose] <input_file>");
+          PrintUsage(Console.Out);
           return 0;
         }
-        else if (arg == "--strict")
+        else if (arg == "-s" || arg == "--strict")
         {
           strict_mode = true;
         }
-        else if (arg == "--verbose" || arg == "-v")
+        else if (arg == "-v" || arg == "--verbose")
         {
           strict_mode = true;
         }
         else if (arg.StartsWith("-") && arg != "-")
         {
           Console.Error.WriteLine("Unknown command line arg: {0}", arg);
+          PrintUsage(Console.Error);
           return 1;
         }
         else
@@ -80,12 +95,13 @@ class Application
       switch (positionals.Count)
       {
         case 0:
-          Console.Error.WriteLine("svg2tvgt [--output <file_name>] <input_file>");
+          PrintUsage(Console.Error);
           return 1;
         case 1:
           break;
         default:
           Console.Error.WriteLine("svg2tvgt requires exactly one positional argument");
+          PrintUsage(Console.Error);
           return 1;
       }
       input_file_name = positionals[0];
