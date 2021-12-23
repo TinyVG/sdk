@@ -99,11 +99,16 @@ impl Document {
             };
 
             writeln!(buf, "      (")?;
+            let mut is_open: bool = false;
             for segment in path {
                 match segment {
                     usvg::PathSegment::MoveTo { x, y } => {
+                        if is_open {
+                            writeln!(buf, "        )")?;
+                        }
                         writeln!(buf, "        ({} {})", x, y)?;
                         writeln!(buf, "        (")?;
+                        is_open = true;
                     }
                     usvg::PathSegment::LineTo { x, y } => {
                         writeln!(buf, "          (line - {} {})", x, y)?;
@@ -114,9 +119,11 @@ impl Document {
                     }
                     usvg::PathSegment::ClosePath => {
                         writeln!(buf, "          (close -)")?;
-                        writeln!(buf, "        )")?;
                     }
                 }
+            }
+             if is_open {
+                writeln!(buf, "        )")?;
             }
             writeln!(buf, "      )")?;
             writeln!(buf, "    )")?;
