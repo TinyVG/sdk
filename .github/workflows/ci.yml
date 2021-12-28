@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [main]
+    branches: [main]isk
   pull_request:
     branches: [main]
 
@@ -25,17 +25,15 @@ jobs:
         with:
           version: master
 
-      - name: Install dotnet sdk
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
 
       - name: Compile Tools
         run: zig build install
 
       - name: Compile Svg2TvgText
         working-directory: src/tools/svg2tvgt/
-        run: dotnet build
+        run: cargo build
 
       - name: Run Testsuite
         run: zig build test
