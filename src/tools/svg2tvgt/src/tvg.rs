@@ -210,9 +210,11 @@ pub enum Style {
 }
 
 pub fn usvg_to_tvg(tree: &usvg::Tree) -> Document {
+    let svg_node = tree.svg_node();
+
     let mut doc = Document {
-        width: tree.svg_node().size.width().round() as u32,
-        height: tree.svg_node().size.height().round() as u32,
+        width: svg_node.size.width().round() as u32,
+        height: svg_node.size.height().round() as u32,
         scale: 1,
         color_encoding: ColorEncoding::Rgba8888,
         coordinate_range: CoordinateRange::Default,
@@ -220,7 +222,13 @@ pub fn usvg_to_tvg(tree: &usvg::Tree) -> Document {
         commands: Vec::new(),
     };
 
-    convert_children(tree, &tree.root(), usvg::Transform::default(), &mut doc);
+    let viewbox_ts = usvg::utils::view_box_to_transform(
+        svg_node.view_box.rect,
+        svg_node.view_box.aspect,
+        svg_node.size
+    );
+
+    convert_children(tree, &tree.root(), viewbox_ts, &mut doc);
 
     doc
 }
