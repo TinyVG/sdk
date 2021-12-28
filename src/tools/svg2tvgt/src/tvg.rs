@@ -99,7 +99,7 @@ impl Document {
             };
 
             writeln!(buf, "      (")?;
-            let mut is_open: bool = false;
+            let mut is_open = false;
             for segment in path {
                 match segment {
                     usvg::PathSegment::MoveTo { x, y } => {
@@ -122,7 +122,7 @@ impl Document {
                     }
                 }
             }
-             if is_open {
+            if is_open {
                 writeln!(buf, "        )")?;
             }
             writeln!(buf, "      )")?;
@@ -255,10 +255,15 @@ fn convert_children(
                     None => continue,
                 };
 
-                let fill = path.fill.clone()
-                    .and_then(|fill| convert_paint(tree, &fill.paint, bbox, doc));
-                let stroke = path.stroke.clone()
-                    .and_then(|stroke| convert_paint(tree, &stroke.paint, bbox, doc));
+                let fill_opacity = path.fill.as_ref()
+                    .map(|fill| fill.opacity).unwrap_or_default();
+                let stroke_opacity = path.stroke.as_ref()
+                    .map(|stroke| stroke.opacity).unwrap_or_default();
+
+                let fill = path.fill.as_ref()
+                    .and_then(|fill| convert_paint(tree, &fill.paint, fill_opacity, bbox, doc));
+                let stroke = path.stroke.as_ref()
+                    .and_then(|stroke| convert_paint(tree, &stroke.paint, stroke_opacity, bbox, doc));
 
                 let cmd = match (fill, stroke) {
                     (Some(fill), Some(stroke)) => {
@@ -295,12 +300,15 @@ fn convert_children(
 fn convert_paint(
     tree: &usvg::Tree,
     paint: &usvg::Paint,
+    opacity: usvg::Opacity,
     bbox: usvg::PathBbox,
     doc: &mut Document,
 ) -> Option<Style> {
     match paint {
         usvg::Paint::Color(color) => {
-            Some(Style::Flat { color: doc.push_color(*color) })
+            let mut color = color.clone();
+            color.apply_opacity(opacity);
+            Some(Style::Flat { color: doc.push_color(color) })
         }
         usvg::Paint::Link(ref id) => {
             if let Some(node) = tree.defs_by_id(id) {
@@ -311,7 +319,7 @@ fn convert_paint(
                         let (x1, y1) = ts.apply(grad.x1, grad.y1);
                         let (x2, y2) = ts.apply(grad.x2, grad.y2);
 
-                        let (color1, color2) = convert_gradient_colors(&grad.stops, doc);
+                        let (color1, color2) = convert_gradient_colors(&grad.stops, opacity, doc);
                         Some(Style::LinearGradient {
                             x1: x1 as f32,
                             y1: y1 as f32,
@@ -327,7 +335,7 @@ fn convert_paint(
                         let (x1, y1) = ts.apply(grad.cx, grad.cy);
                         let (x2, y2) = ts.apply(grad.cx, grad.cy + grad.r.value());
 
-                        let (color1, color2) = convert_gradient_colors(&grad.stops, doc);
+                        let (color1, color2) = convert_gradient_colors(&grad.stops, opacity, doc);
                         Some(Style::RadialGradient {
                             x1: x1 as f32,
                             y1: y1 as f32,
@@ -364,17 +372,34 @@ fn gradient_transform(g: &usvg::BaseGradient, bbox: usvg::PathBbox) -> Option<us
     }
 }
 
-fn convert_gradient_colors(stops: &[usvg::Stop], doc: &mut Document) -> (u32, u32) {
+fn convert_gradient_colors(
+    stops: &[usvg::Stop],
+    opacity: usvg::Opacity,
+    doc: &mut Document
+) -> (u32, u32) {
     // Unwrap is safe, because usvg guarantees to have at least two values.
     let mut stop1 = *stops.first().unwrap();
     let mut stop2 = *stops.last().unwrap();
 
     // NOTE: we do ignore stop offsets
 
-    stop1.color.alpha = multiply_a8(stop1.color.alpha, stop1.opacity.to_u8());
-    stop2.color.alpha = multiply_a8(stop2.color.alpha, stop2.opacity.to_u8());
+    stop1.color.apply_opacity(stop1.opacity);
+    stop2.color.apply_opacity(stop2.opacity);
+
+    stop1.color.apply_opacity(opacity);
+    stop2.color.apply_opacity(opacity);
 
     (doc.push_color(stop1.color), doc.push_color(stop2.color))
+}
+
+trait UsvgColorExt {
+    fn apply_opacity(&mut self, opacity: usvg::Opacity);
+}
+
+impl UsvgColorExt for usvg::Color {
+    fn apply_opacity(&mut self, opacity: usvg::Opacity) {
+        self.alpha = multiply_a8(self.alpha, opacity.to_u8());
+    }
 }
 
 /// Return a*b/255, rounding any fractional bits.
