@@ -243,6 +243,7 @@ const SvgStyle = struct {
         }
 
         if (self.line_style) |style| {
+            try writer.writeAll("stroke-linecap:round;");
             switch (style) {
                 .flat => |ind| try self.cache.printColorForStyle(writer, "stroke", ind),
                 .linear, .radial => try writer.print("stroke:url(#grad{});", .{
