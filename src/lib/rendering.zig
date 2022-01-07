@@ -51,10 +51,10 @@ pub fn renderStream(
         .size => |size| size,
         .width => |width| Size{
             .width = width,
-            .height = (parser.header.width * parser.header.height) / width,
+            .height = (width * parser.header.height) / parser.header.width,
         },
         .height => |height| Size{
-            .width = (parser.header.height * parser.header.width) / height,
+            .width = (height * parser.header.width) / parser.header.height,
             .height = height,
         },
     };

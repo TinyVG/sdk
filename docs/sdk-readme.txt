@@ -41,6 +41,8 @@ Tools:
       -h, --help             Prints this text.
       -o, --output <file>    The TGA file that should be written. Default is <input> with .tga extension.
       -g, --geometry         Specifies the output geometry of the image. Has the format <width>x<height>.
+          --width <width>    Specifies the output width to be <width>. Height will be derived via aspect ratio.
+          --height <height>  Specifies the output height to be <height>. Width will be derived via aspect ratio.
       -s, --super-sampling   Sets the super-sampling size for the image. Use 1 for no super sampling and 16 for very high quality.
       -a, --anti-alias       Sets the super-sampling size to 4. This is usually decent enough for most images.
 
