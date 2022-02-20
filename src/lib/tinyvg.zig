@@ -47,11 +47,12 @@ pub fn renderStream(
     defer parser.deinit();
 
     while (try parser.next()) |cmd| {
-        try rendering.render(
+        try rendering.renderCommand(
             framebuffer,
             parser.header,
             parser.color_table,
             cmd,
+            allocator,
         );
     }
 }
