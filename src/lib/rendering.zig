@@ -783,8 +783,8 @@ fn pointFromInts(x: i16, y: i16) Point {
 const IntPoint = struct { x: i16, y: i16 };
 fn pointToInts(point: Point) IntPoint {
     return IntPoint{
-        .x = floatToIntClamped(i16, std.math.round(point.x)),
-        .y = floatToIntClamped(i16, std.math.round(point.y)),
+        .x = floatToIntClamped(i16, @round(point.x)),
+        .y = floatToIntClamped(i16, @round(point.y)),
     };
 }
 
