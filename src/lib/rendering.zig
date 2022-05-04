@@ -621,21 +621,11 @@ inline fn toRadians(a: f32) f32 {
 }
 
 inline fn cos(val: anytype) @TypeOf(val) {
-    // Workaround for https://github.com/ziglang/zig/issues/10318
-    if (builtin.os.tag.isDarwin()) {
-        return std.math.cos(val);
-    } else {
-        return @cos(val);
-    }
+    return @cos(val);
 }
 
 inline fn sin(val: anytype) @TypeOf(val) {
-    // Workaround for https://github.com/ziglang/zig/issues/10318
-    if (builtin.os.tag.isDarwin()) {
-        return std.math.sin(val);
-    } else {
-        return @sin(val);
-    }
+    return @sin(val);
 }
 inline fn sqrt(val: anytype) @TypeOf(val) {
     return @sqrt(val);
@@ -898,10 +888,10 @@ const Painter = struct {
         for (points_lists) |points| {
             // std.debug.assert(points.len >= 3);
             for (points) |pt| {
-                min_x = std.math.min(min_x, floatToIntClamped(i16, std.math.floor(self.scale_x * pt.x)));
-                min_y = std.math.min(min_y, floatToIntClamped(i16, std.math.floor(self.scale_y * pt.y)));
-                max_x = std.math.max(max_x, floatToIntClamped(i16, std.math.ceil(self.scale_x * pt.x)));
-                max_y = std.math.max(max_y, floatToIntClamped(i16, std.math.ceil(self.scale_y * pt.y)));
+                min_x = std.math.min(min_x, floatToIntClamped(i16, @floor(self.scale_x * pt.x)));
+                min_y = std.math.min(min_y, floatToIntClamped(i16, @floor(self.scale_y * pt.y)));
+                max_x = std.math.max(max_x, floatToIntClamped(i16, @ceil(self.scale_x * pt.x)));
+                max_y = std.math.max(max_y, floatToIntClamped(i16, @ceil(self.scale_y * pt.y)));
             }
         }
 
@@ -952,12 +942,12 @@ const Painter = struct {
     }
 
     fn fillRectangle(self: Painter, framebuffer: anytype, x: f32, y: f32, width: f32, height: f32, color_table: []const Color, style: Style) void {
-        const xlimit = @floatToInt(i16, std.math.ceil(self.scale_x * (x + width)));
-        const ylimit = @floatToInt(i16, std.math.ceil(self.scale_y * (y + height)));
+        const xlimit = @floatToInt(i16, @ceil(self.scale_x * (x + width)));
+        const ylimit = @floatToInt(i16, @ceil(self.scale_y * (y + height)));
 
-        var py = @floatToInt(i16, std.math.floor(self.scale_y * y));
+        var py = @floatToInt(i16, @floor(self.scale_y * y));
         while (py < ylimit) : (py += 1) {
-            var px = @floatToInt(i16, std.math.floor(self.scale_x * x));
+            var px = @floatToInt(i16, @floor(self.scale_x * x));
             while (px < xlimit) : (px += 1) {
                 framebuffer.setPixel(px, py, self.sampleStlye(color_table, style, px, py));
             }
@@ -998,18 +988,18 @@ const Painter = struct {
     ///     pb -= pa;
     ///     float h = dot(pb,pb);
     ///     vec2  q = vec2( dot(p,vec2(pb.y,-pb.x)), dot(p,pb) )/h;
-    ///     
+    ///
     ///     //-----------
-    ///     
+    ///
     ///     q.x = abs(q.x);
-    ///     
+    ///
     ///     float b = ra-rb;
     ///     vec2  c = vec2(sqrt(h-b*b),b);
-    ///     
+    ///
     ///     float k = cro(c,q);
     ///     float m = dot(c,q);
     ///     float n = dot(q,q);
-    ///     
+    ///
     ///          if( k < 0.0 ) return sqrt(h*(n            )) - ra;
     ///     else if( k > c.x ) return sqrt(h*(n+1.0-2.0*q.y)) - rb;
     ///                        return m                       - ra;
@@ -1025,10 +1015,10 @@ const Painter = struct {
 
         const points = [_]tvg.Point{ line.start, line.end };
         for (points) |pt| {
-            min_x = std.math.min(min_x, @floatToInt(i16, std.math.floor(self.scale_x * (pt.x - max_width))));
-            min_y = std.math.min(min_y, @floatToInt(i16, std.math.floor(self.scale_y * (pt.y - max_width))));
-            max_x = std.math.max(max_x, @floatToInt(i16, std.math.ceil(self.scale_x * (pt.x + max_width))));
-            max_y = std.math.max(max_y, @floatToInt(i16, std.math.ceil(self.scale_y * (pt.y + max_width))));
+            min_x = std.math.min(min_x, @floatToInt(i16, @floor(self.scale_x * (pt.x - max_width))));
+            min_y = std.math.min(min_y, @floatToInt(i16, @floor(self.scale_y * (pt.y - max_width))));
+            max_x = std.math.max(max_x, @floatToInt(i16, @ceil(self.scale_x * (pt.x + max_width))));
+            max_y = std.math.max(max_y, @floatToInt(i16, @ceil(self.scale_y * (pt.y + max_width))));
         }
 
         // limit to valid screen area
