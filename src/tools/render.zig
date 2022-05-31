@@ -130,8 +130,8 @@ pub fn main() !u8 {
     }
 
     {
-        const width = try std.math.cast(u16, image.width);
-        const height = try std.math.cast(u16, image.height);
+        const width = std.math.cast(u16, image.width) orelse return 1;
+        const height = std.math.cast(u16, image.height) orelse return 1;
 
         var dest_file: std.fs.File = if (write_stdout)
             std.io.getStdIn()

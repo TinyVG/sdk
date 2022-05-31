@@ -4,17 +4,17 @@ const pkgs = struct {
     // TinyVG package
     const tvg = std.build.Pkg{
         .name = "tvg",
-        .path = .{ .path = "src/lib/tinyvg.zig" },
+        .source = .{ .path = "src/lib/tinyvg.zig" },
         .dependencies = &.{ptk},
     };
     const ptk = std.build.Pkg{
         .name = "ptk",
-        .path = .{ .path = "vendor/parser-toolkit/src/main.zig" },
+        .source = .{ .path = "vendor/parser-toolkit/src/main.zig" },
     };
 
     const args = std.build.Pkg{
         .name = "args",
-        .path = .{ .path = "vendor/zig-args/args.zig" },
+        .source = .{ .path = "vendor/zig-args/args.zig" },
     };
 };
 
@@ -113,14 +113,14 @@ pub fn build(b: *std.build.Builder) !void {
     }
 
     {
-        const tvg_tests = b.addTestSource(pkgs.tvg.path);
+        const tvg_tests = b.addTestSource(pkgs.tvg.source);
         for (pkgs.tvg.dependencies.?) |dep| {
             tvg_tests.addPackage(dep);
         }
 
         tvg_tests.addPackage(std.build.Pkg{
             .name = "ground-truth",
-            .path = .{ .path = "src/data/ground-truth.zig" },
+            .source = .{ .path = "src/data/ground-truth.zig" },
             .dependencies = &[_]std.build.Pkg{
                 pkgs.tvg,
             },
