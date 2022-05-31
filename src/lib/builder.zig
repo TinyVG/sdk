@@ -81,7 +81,7 @@ pub fn Builder(comptime Writer: type) type {
             errdefer self.state = .faulted;
             std.debug.assert(self.state == .color_table);
 
-            const count = std.math.cast(u32, colors.len) catch return error.OutOfRange;
+            const count = std.math.cast(u32, colors.len) orelse return error.OutOfRange;
             try self.writeUint(count);
 
             switch (self.color_encoding) {
@@ -244,7 +244,7 @@ pub fn Builder(comptime Writer: type) type {
         fn validateLength(count: usize) Error!u32 {
             if (count == 0)
                 return error.OutOfRange;
-            return std.math.cast(u32, count - 1) catch return error.OutOfRange;
+            return std.math.cast(u32, count - 1) orelse return error.OutOfRange;
         }
 
         fn validatePath(segments: []const tvg.Path.Segment) Error!void {
@@ -356,11 +356,11 @@ pub fn Builder(comptime Writer: type) type {
             const val = self.scale.map(value).raw();
             switch (self.range) {
                 .reduced => {
-                    const reduced_val = std.math.cast(i8, val) catch return error.OutOfRange;
+                    const reduced_val = std.math.cast(i8, val) orelse return error.OutOfRange;
                     try self.writer.writeIntLittle(i8, reduced_val);
                 },
                 .default => {
-                    const reduced_val = std.math.cast(i16, val) catch return error.OutOfRange;
+                    const reduced_val = std.math.cast(i16, val) orelse return error.OutOfRange;
                     try self.writer.writeIntLittle(i16, reduced_val);
                 },
                 .enhanced => {
