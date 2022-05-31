@@ -181,7 +181,7 @@ const Framebuffer = struct {
             return;
         if (x >= self.width or y >= self.height)
             return;
-        const offset = (std.math.cast(usize, y) catch return) * self.stride + (std.math.cast(usize, x) catch return);
+        const offset = (std.math.cast(usize, y) orelse return) * self.stride + (std.math.cast(usize, x) orelse return);
 
         const destination_pixel = &self.slice[offset];
 
