@@ -1,0 +1,16 @@
+[package]
+name = "svg2tvgt"
+version = "0.1.0"
+authors = ["Yevhenii Reizner <razrfalcon@gmail.com>"]
+license = "MIT"
+description = "An SVG to TinyVG converter."
+edition = "2018"
+
+[dependencies]
+log = "0.4"
+pico-args = "0.4"
+
+[dependencies.usvg]
+version = "0.19"
+default-features = false
+features = ["text", "system-fonts", "memmap-fonts"]
