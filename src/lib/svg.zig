@@ -194,8 +194,6 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
                     try writer.writeAll("</linearGradient>");
                 },
                 .radial => |grad| {
-                    _ = grad;
-
                     var dx = grad.point_1.x - grad.point_0.x;
                     var dy = grad.point_1.y - grad.point_0.y;
                     var r = std.math.sqrt(dx * dx + dy * dy);
