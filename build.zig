@@ -20,7 +20,7 @@ const pkgs = struct {
 
 fn initNativeLibrary(lib: *std.build.LibExeObjStep, mode: std.builtin.Mode, target: std.zig.CrossTarget) void {
     lib.addPackage(pkgs.tvg);
-    lib.addIncludeDir("src/binding/include");
+    lib.addIncludePath("src/binding/include");
     lib.setBuildMode(mode);
     lib.setTarget(target);
     lib.bundle_compiler_rt = true;
@@ -129,14 +129,14 @@ pub fn build(b: *std.build.Builder) !void {
         const static_binding_test = b.addExecutable("static-native-binding", null);
         static_binding_test.setBuildMode(mode);
         static_binding_test.linkLibC();
-        static_binding_test.addIncludeDir("src/binding/include");
+        static_binding_test.addIncludePath("src/binding/include");
         static_binding_test.addCSourceFile("examples/usage.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
         static_binding_test.linkLibrary(static_native_lib);
 
         const dynamic_binding_test = b.addExecutable("static-native-binding", null);
         dynamic_binding_test.setBuildMode(mode);
         dynamic_binding_test.linkLibC();
-        dynamic_binding_test.addIncludeDir("src/binding/include");
+        dynamic_binding_test.addIncludePath("src/binding/include");
         dynamic_binding_test.addCSourceFile("examples/usage.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
         dynamic_binding_test.linkLibrary(dynamic_native_lib);
 
