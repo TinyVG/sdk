@@ -271,7 +271,7 @@ pub fn writeEverything(src_writer: anytype, range: tvg.Range) !void {
     for (style_base) |style_example| {
         var dy: f32 = padding;
 
-        for (items) |item| {
+        inline for (items) |item| {
             var style = style_example;
             switch (style) {
                 .flat => {},
