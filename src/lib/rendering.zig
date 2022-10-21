@@ -176,7 +176,7 @@ const Framebuffer = struct {
     width: usize,
     height: usize,
 
-    pub fn setPixel(self: Self, x: isize, y: isize, src_color: tvg.Color) void {
+    pub fn setPixel(self: *const Self, x: isize, y: isize, src_color: tvg.Color) void {
         if (x < 0 or y < 0)
             return;
         if (x >= self.width or y >= self.height)
@@ -1196,14 +1196,14 @@ pub fn FixedBufferList(comptime T: type, comptime N: usize) type {
             return self.buffer[0..self.count];
         }
 
-        pub fn items(self: Self) []const T {
+        pub fn items(self: *const Self) []const T {
             if (self.large) |*large| {
                 return large.items;
             }
             return self.buffer[0..self.count];
         }
 
-        pub fn front(self: Self) ?T {
+        pub fn front(self: *const Self) ?T {
             if (self.large) |*large| {
                 if (large.items.len > 0) {
                     return large.items[0];
@@ -1216,7 +1216,7 @@ pub fn FixedBufferList(comptime T: type, comptime N: usize) type {
             return self.buffer[0];
         }
 
-        pub fn back(self: Self) ?T {
+        pub fn back(self: *const Self) ?T {
             if (self.large) |*large| {
                 if (large.items.len > 0) {
                     return large.items[large.items.len - 1];
