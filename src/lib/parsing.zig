@@ -457,7 +457,7 @@ pub fn Parser(comptime Reader: type) type {
             };
         }
 
-        fn readNode(self: Self) !Path.Node {
+        fn readNode(self: *Self) !Path.Node {
             const Tag = packed struct {
                 type: Path.Type,
                 padding0: u1 = 0,
@@ -534,7 +534,7 @@ pub fn Parser(comptime Reader: type) type {
             };
         }
 
-        fn readStyle(self: Self, kind: StyleType) !Style {
+        fn readStyle(self: *Self, kind: StyleType) !Style {
             return switch (kind) {
                 .flat => Style{ .flat = try self.readUInt() },
                 .linear => Style{ .linear = try self.readGradient() },
@@ -542,7 +542,7 @@ pub fn Parser(comptime Reader: type) type {
             };
         }
 
-        fn readGradient(self: Self) !Gradient {
+        fn readGradient(self: *Self) !Gradient {
             var grad: Gradient = undefined;
             grad.point_0 = Point{
                 .x = try self.readUnit(),
@@ -563,7 +563,7 @@ pub fn Parser(comptime Reader: type) type {
             return grad;
         }
 
-        fn readUInt(self: Self) error{InvalidData}!u32 {
+        fn readUInt(self: *Self) error{InvalidData}!u32 {
             var byte_count: u8 = 0;
             var result: u32 = 0;
             while (true) {
@@ -581,7 +581,7 @@ pub fn Parser(comptime Reader: type) type {
             return result;
         }
 
-        fn readUnit(self: Self) !f32 {
+        fn readUnit(self: *const Self) !f32 {
             switch (self.header.coordinate_range) {
                 .reduced => return @intToEnum(tvg.Unit, try self.reader.readIntLittle(i8)).toFloat(self.header.scale),
                 .default => return @intToEnum(tvg.Unit, try self.reader.readIntLittle(i16)).toFloat(self.header.scale),
@@ -589,11 +589,11 @@ pub fn Parser(comptime Reader: type) type {
             }
         }
 
-        fn readByte(self: Self) !u8 {
+        fn readByte(self: *Self) !u8 {
             return try self.reader.readByte();
         }
 
-        fn readU16(self: Self) !u16 {
+        fn readU16(self: *Self) !u16 {
             return try self.reader.readIntLittle(u16);
         }
     };
@@ -604,11 +604,11 @@ const CountAndStyleTag = packed struct {
     raw_count: u6,
     style_kind: u2,
 
-    pub fn getCount(self: Self) usize {
+    pub fn getCount(self: *const Self) usize {
         return @as(usize, self.raw_count) + 1;
     }
 
-    pub fn getStyleType(self: Self) !StyleType {
+    pub fn getStyleType(self: *const Self) !StyleType {
         return convertStyleType(self.style_kind);
     }
 };

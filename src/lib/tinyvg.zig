@@ -145,15 +145,15 @@ pub const Scale = enum(u4) {
     @"1/16384" = 14,
     @"1/32768" = 15,
 
-    pub fn map(self: Self, value: f32) Unit {
-        return Unit.init(self, value);
+    pub fn map(self: *const Self, value: f32) Unit {
+        return Unit.init(self.*, value);
     }
 
-    pub fn getShiftBits(self: Self) u4 {
-        return @enumToInt(self);
+    pub fn getShiftBits(self: *const Self) u4 {
+        return @enumToInt(self.*);
     }
 
-    pub fn getScaleFactor(self: Self) u15 {
+    pub fn getScaleFactor(self: *const Self) u15 {
         return @as(u15, 1) << self.getShiftBits();
     }
 };
@@ -168,20 +168,20 @@ pub const Unit = enum(i32) {
         return @intToEnum(Self, @floatToInt(i32, value * @intToFloat(f32, scale.getScaleFactor()) + 0.5));
     }
 
-    pub fn raw(self: Self) i32 {
-        return @enumToInt(self);
+    pub fn raw(self: *const Self) i32 {
+        return @enumToInt(self.*);
     }
 
-    pub fn toFloat(self: Self, scale: Scale) f32 {
-        return @intToFloat(f32, @enumToInt(self)) / @intToFloat(f32, scale.getScaleFactor());
+    pub fn toFloat(self: *const Self, scale: Scale) f32 {
+        return @intToFloat(f32, @enumToInt(self.*)) / @intToFloat(f32, scale.getScaleFactor());
     }
 
-    pub fn toInt(self: Self, scale: Scale) i32 {
+    pub fn toInt(self: *const Self, scale: Scale) i32 {
         const factor = scale.getScaleFactor();
-        return @divFloor(@enumToInt(self) + (@divExact(factor, 2)), factor);
+        return @divFloor(@enumToInt(self.*) + (@divExact(factor, 2)), factor);
     }
 
-    pub fn toUnsignedInt(self: Self, scale: Scale) !u31 {
+    pub fn toUnsignedInt(self: *const Self, scale: Scale) !u31 {
         const i = toInt(self, scale);
         if (i < 0)
             return error.InvalidData;
@@ -197,7 +197,7 @@ pub const Color = extern struct {
     b: f32,
     a: f32,
 
-    pub fn toRgba8(self: Self) [4]u8 {
+    pub fn toRgba8(self: *const Self) [4]u8 {
         return [4]u8{
             @floatToInt(u8, std.math.clamp(255.0 * self.r, 0.0, 255.0)),
             @floatToInt(u8, std.math.clamp(255.0 * self.g, 0.0, 255.0)),
