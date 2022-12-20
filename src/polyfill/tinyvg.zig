@@ -72,7 +72,7 @@ pub fn log(
 }
 
 /// Overwrite default panic handler
-pub fn panic(msg: []const u8, _: ?*std.builtin.StackTrace) noreturn {
+pub fn panic(msg: []const u8, _: ?*std.builtin.StackTrace, _: ?usize) noreturn {
     // std.log.crit("panic: {s}", .{msg});
     platformPanic(msg.ptr, msg.len);
     unreachable;

@@ -303,7 +303,7 @@ pub fn parse(allocator: std.mem.Allocator, source: []const u8, writer: anytype) 
 
         fn matchAtom(slice: []const u8) ?usize {
             for (slice) |c, i| {
-                if (c == ')' or c == '(' or std.ascii.isSpace(c))
+                if (c == ')' or c == '(' or std.ascii.isWhitespace(c))
                     return i;
             }
             return slice.len;
@@ -579,6 +579,7 @@ pub fn parse(allocator: std.mem.Allocator, source: []const u8, writer: anytype) 
                         try self.expectBegin();
 
                         var elements = std.ArrayList(tvg.Path.Node).init(arena.allocator());
+
                         while (true) {
                             const cmd_start = try self.expectAny();
                             switch (cmd_start) {
@@ -628,14 +629,14 @@ pub fn parse(allocator: std.mem.Allocator, source: []const u8, writer: anytype) 
                                 },
                             }
                         }
-                        segment.commands = elements.toOwnedSlice();
+                        segment.commands = try elements.toOwnedSlice();
                     },
                 }
             }
 
             return Path{
                 .arena = arena,
-                .segments = segments.toOwnedSlice(),
+                .segments = try segments.toOwnedSlice(),
             };
         }
 
