@@ -206,9 +206,17 @@ pub fn Parser(comptime Reader: type) type {
         }
 
         fn setTempStorage(self: *Self, comptime T: type, length: usize) ![]T {
-            try self.temp_buffer.resize(@sizeOf(T) * length);
+            // temp_buffer might resize to start on an address that's not
+            // aligned to T
+            try self.temp_buffer.resize(@sizeOf(T) * length + (@alignOf(T) - 1));
 
-            var items = @alignCast(@alignOf(T), std.mem.bytesAsSlice(T, self.temp_buffer.items));
+            const ptr = @ptrToInt(self.temp_buffer.items.ptr);
+            const ptrOff = std.mem.alignForward(ptr, @alignOf(T));
+            const offset = ptrOff - ptr;
+
+            //std.debug.print("temp_buffer.ptr {*}, align {d}, offset {d}\n", .{ self.temp_buffer.items.ptr, @alignOf(T), offset });
+
+            var items = @alignCast(@alignOf(T), std.mem.bytesAsSlice(T, self.temp_buffer.items[offset..(offset + @sizeOf(T) * length)]));
             std.debug.assert(items.len == length);
             return items;
         }
@@ -220,12 +228,22 @@ pub fn Parser(comptime Reader: type) type {
             comptime T2: type,
             length2: usize,
         ) !struct { first: []T1, second: []T2 } {
-            const offset_second_buffer = std.mem.alignForward(@sizeOf(T1) * length1, @alignOf(T2));
-            try self.temp_buffer.resize(offset_second_buffer + @sizeOf(T2) * length2);
+            // temp_buffer might resize to start on an address that's not
+            // aligned to either T1 or T2
+            try self.temp_buffer.resize(@sizeOf(T1) * length1 + (@alignOf(T1) - 1) + @sizeOf(T2) * length2 + (@alignOf(T2) - 1));
+
+            const ptr = @ptrToInt(self.temp_buffer.items.ptr);
+            const ptrOff = std.mem.alignForward(ptr, @alignOf(T1));
+            const offset = ptrOff - ptr;
+
+            const ptrOff2 = std.mem.alignForward(ptr + offset + @sizeOf(T1) * length1, @alignOf(T2));
+            const offset2 = ptrOff2 - ptr;
+
+            //std.debug.print("temp_buffer.ptr {*}, align {d}, offset {d}, size {d}, len {d}, align2 {d}, offset2 {d}\n", .{ self.temp_buffer.items.ptr, @alignOf(T1), offset, @sizeOf(T1), length1, @alignOf(T2), offset2 });
 
             var result = .{
-                .first = @alignCast(@alignOf(T1), std.mem.bytesAsSlice(T1, self.temp_buffer.items[0..offset_second_buffer])),
-                .second = @alignCast(@alignOf(T2), std.mem.bytesAsSlice(T2, self.temp_buffer.items[offset_second_buffer..])),
+                .first = @alignCast(@alignOf(T1), std.mem.bytesAsSlice(T1, self.temp_buffer.items[offset..(offset + @sizeOf(T1) * length1)])),
+                .second = @alignCast(@alignOf(T2), std.mem.bytesAsSlice(T2, self.temp_buffer.items[offset2..(offset2 + @sizeOf(T2) * length2)])),
             };
 
             std.debug.assert(result.first.len == length1);
