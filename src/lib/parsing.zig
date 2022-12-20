@@ -210,7 +210,7 @@ pub fn Parser(comptime Reader: type) type {
             // alignment here
             try self.temp_buffer.resize(@sizeOf(T) * length);
 
-            var items = @alignCast(@alignOf(T), std.mem.bytesAsSlice(T, self.temp_buffer.items[0..(@sizeOf(T) * length)]));
+            var items = std.mem.bytesAsSlice(T, self.temp_buffer.items[0..(@sizeOf(T) * length)]);
             std.debug.assert(items.len == length);
             return items;
         }
@@ -227,13 +227,11 @@ pub fn Parser(comptime Reader: type) type {
             try self.temp_buffer.resize(@sizeOf(T1) * length1 + @sizeOf(T2) * length2 + (@alignOf(T2) - 1));
 
             // T2 alignment could be larger than T1
-            const ptr = @ptrToInt(self.temp_buffer.items.ptr);
-            const ptrOff = std.mem.alignForward(ptr + @sizeOf(T1) * length1, @alignOf(T2));
-            const offset = ptrOff - ptr;
+            const offset = std.mem.alignForward(@sizeOf(T1) * length1, @alignOf(T2));
 
             var result = .{
-                .first = @alignCast(@alignOf(T1), std.mem.bytesAsSlice(T1, self.temp_buffer.items[0 .. @sizeOf(T1) * length1])),
-                .second = @alignCast(@alignOf(T2), std.mem.bytesAsSlice(T2, self.temp_buffer.items[offset..(offset + @sizeOf(T2) * length2)])),
+                .first = std.mem.bytesAsSlice(T1, self.temp_buffer.items[0 .. @sizeOf(T1) * length1]),
+                .second = @alignCast(@alignOf(T2), std.mem.bytesAsSlice(T2, self.temp_buffer.items[offset..][0 .. @sizeOf(T2) * length2])),
             };
 
             std.debug.assert(result.first.len == length1);
