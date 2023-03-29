@@ -1,5 +1,5 @@
 const std = @import("std");
-const tvg = @import("tvg");
+const tvg = if (@import("builtin").is_test) @import("../lib/tinyvg.zig") else @import("tvg");
 
 // pub const everything_16 = blk: {
 //     @setEvalBranchQuota(100_000);

@@ -441,7 +441,7 @@ pub fn Parser(comptime Reader: type) type {
             );
 
             var segment_start: usize = 0;
-            for (buffers.first) |*segment, i| {
+            for (buffers.first, 0..) |*segment, i| {
                 const segment_len = segment_lengths[i];
 
                 segment.start.x = try self.readUnit();
@@ -665,7 +665,7 @@ test "coverage test" {
     var source_buf: [2048]u8 = undefined;
     var stream = std.io.fixedBufferStream(&source_buf);
 
-    @import("ground-truth").writeEverything(stream.writer(), .default) catch unreachable;
+    @import("../data/ground-truth.zig").writeEverything(stream.writer(), .default) catch unreachable;
 
     try stream.seekTo(0);
 

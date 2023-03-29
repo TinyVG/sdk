@@ -93,7 +93,7 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
                 , .{
                     svgStyle(&cache, null, data.style, data.line_width),
                 });
-                for (data.vertices) |vertex, i| {
+                for (data.vertices, 0..) |vertex, i| {
                     if (i > 0) try writer.writeAll(" ");
                     try writer.print("{d},{d}", .{ vertex.x, vertex.y });
                 }
@@ -108,7 +108,7 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
                 , .{
                     svgStyle(&cache, null, data.style, data.line_width),
                 });
-                for (data.vertices) |vertex, i| {
+                for (data.vertices, 0..) |vertex, i| {
                     if (i > 0) try writer.writeAll(" ");
                     try writer.print("{d},{d}", .{ vertex.x, vertex.y });
                 }
@@ -123,7 +123,7 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
                 , .{
                     svgStyle(&cache, data.style, null, null),
                 });
-                for (data.vertices) |vertex, i| {
+                for (data.vertices, 0..) |vertex, i| {
                     if (i > 0) try writer.writeAll(" ");
                     try writer.print("{d},{d}", .{ vertex.x, vertex.y });
                 }
@@ -138,7 +138,7 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
                 , .{
                     svgStyle(&cache, data.fill_style, data.line_style, data.line_width),
                 });
-                for (data.vertices) |vertex, i| {
+                for (data.vertices, 0..) |vertex, i| {
                     if (i > 0) try writer.writeAll(" ");
                     try writer.print("{d},{d}", .{ vertex.x, vertex.y });
                 }
@@ -177,7 +177,7 @@ pub fn renderStream(allocator: std.mem.Allocator, parser: anytype, writer: anyty
     if (cache.list.items.len > 0) {
         try writer.writeAll("<defs>");
 
-        for (cache.list.items) |style, i| {
+        for (cache.list.items, 0..) |style, i| {
             switch (style) {
                 .linear => |grad| {
                     try writer.print(
