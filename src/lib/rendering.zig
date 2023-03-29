@@ -97,7 +97,7 @@ pub fn renderStream(
     errdefer image_allocator.free(image.pixels);
 
     // resolve anti-aliasing
-    for (image.pixels) |*pixel, i| {
+    for (image.pixels, 0..) |*pixel, i| {
         const x = i % image.width;
         const y = i / image.width;
 
@@ -108,10 +108,8 @@ pub fn renderStream(
         // The average must also be computed in linear space, as we would get invalid color blending otherwise.
         var color = std.mem.zeroes([4]f32);
 
-        var dy: usize = 0;
-        while (dy < super_scale) : (dy += 1) {
-            var dx: usize = 0;
-            while (dx < super_scale) : (dx += 1) {
+        for (0..super_scale) |dy| {
+            for (0..super_scale) |dx| {
                 const sx = x * super_scale + dx;
                 const sy = y * super_scale + dy;
 
@@ -128,7 +126,7 @@ pub fn renderStream(
         }
 
         // Compute average
-        for (color) |*chan| {
+        for (&color) |*chan| {
             chan.* = chan.* / @intToFloat(f32, super_scale * super_scale);
         }
 
@@ -330,7 +328,7 @@ pub fn renderCommand(
             try renderPath(&point_store, null, &slice_store, data.path, 0.0);
 
             var slices: [max_path_len][]const Point = undefined;
-            for (slice_store.items()) |src, i| {
+            for (slice_store.items(), 0..) |src, i| {
                 slices[i] = point_store.items()[src.offset..][0..src.len];
             }
 
@@ -348,7 +346,7 @@ pub fn renderCommand(
             }
         },
         .draw_line_strip => |data| {
-            for (data.vertices[1..]) |end, i| {
+            for (data.vertices[1..], 0..) |end, i| {
                 const start = data.vertices[i]; // is actually [i-1], but we access the slice off-by-one!
                 painter.drawLine(framebuffer, color_table, data.style, data.line_width, data.line_width, .{
                     .start = start,
@@ -358,7 +356,7 @@ pub fn renderCommand(
         },
         .draw_line_loop => |data| {
             var start_index: usize = data.vertices.len - 1;
-            for (data.vertices) |end, end_index| {
+            for (data.vertices, 0..) |end, end_index| {
                 const start = data.vertices[start_index];
 
                 painter.drawLine(framebuffer, color_table, data.style, data.line_width, data.line_width, .{
@@ -379,14 +377,14 @@ pub fn renderCommand(
             try renderPath(&point_store, &width_store, &slice_store, data.path, data.line_width);
 
             var slices: [slice_store.buffer.len][]const Point = undefined;
-            for (slice_store.items()) |src, i| {
+            for (slice_store.items(), 0..) |src, i| {
                 slices[i] = point_store.items()[src.offset..][0..src.len];
             }
 
             const line_widths = width_store.items();
 
             for (slices[0..slice_store.items().len]) |vertices| {
-                for (vertices[1..]) |end, i| {
+                for (vertices[1..], 0..) |end, i| {
                     const start = vertices[i]; // is actually [i-1], but we access the slice off-by-one!
                     painter.drawLine(framebuffer, color_table, data.style, line_widths[i], line_widths[i + 1], .{
                         .start = start,
@@ -399,7 +397,7 @@ pub fn renderCommand(
             painter.fillPolygonList(framebuffer, color_table, data.fill_style, &[_][]const Point{data.vertices}, .even_odd);
 
             var start_index: usize = data.vertices.len - 1;
-            for (data.vertices) |end, end_index| {
+            for (data.vertices, 0..) |end, end_index| {
                 const start = data.vertices[start_index];
 
                 painter.drawLine(framebuffer, color_table, data.line_style, data.line_width, data.line_width, .{
@@ -434,7 +432,7 @@ pub fn renderCommand(
             try renderPath(&point_store, &width_store, &slice_store, data.path, data.line_width);
 
             var slices: [max_path_len][]const Point = undefined;
-            for (slice_store.items()) |src, i| {
+            for (slice_store.items(), 0..) |src, i| {
                 slices[i] = point_store.items()[src.offset..][0..src.len];
             }
 
@@ -443,7 +441,7 @@ pub fn renderCommand(
             const line_widths = width_store.items();
 
             for (slices[0..slice_store.items().len]) |vertices| {
-                for (vertices[1..]) |end, i| {
+                for (vertices[1..], 0..) |end, i| {
                     const start = vertices[i]; // is actually [i-1], but we access the slice off-by-one!
                     painter.drawLine(framebuffer, color_table, data.line_style, line_widths[i], line_widths[i + 1], .{
                         .start = start,
@@ -533,8 +531,7 @@ pub fn renderPath(
                     const oct0_x = [4]f32{ previous.x, bezier.data.c0.x, bezier.data.c1.x, bezier.data.p1.x };
                     const oct0_y = [4]f32{ previous.y, bezier.data.c0.y, bezier.data.c1.y, bezier.data.p1.y };
 
-                    var i: usize = 1;
-                    while (i < bezier_divs) : (i += 1) {
+                    for (1..bezier_divs) |i| {
                         const f = @intToFloat(f32, i) / @intToFloat(f32, bezier_divs);
 
                         const x = lerpAndReduceToOne(4, oct0_x, f);
@@ -551,8 +548,7 @@ pub fn renderPath(
                     const oct0_x = [3]f32{ previous.x, bezier.data.c.x, bezier.data.p1.x };
                     const oct0_y = [3]f32{ previous.y, bezier.data.c.y, bezier.data.p1.y };
 
-                    var i: usize = 1;
-                    while (i < bezier_divs) : (i += 1) {
+                    for (1..bezier_divs) |i| {
                         const f = @intToFloat(f32, i) / @intToFloat(f32, bezier_divs);
 
                         const x = lerpAndReduceToOne(3, oct0_x, f);
@@ -706,8 +702,8 @@ pub fn renderEllipse(
         end_width,
     ) catch unreachable; // buffer is correctly sized
 
-    for (tmp.point_list.items()) |p, i| {
-        try point_list.append(applyMat(transform_back, p), tmp.width_list.items()[i]);
+    for (tmp.point_list.items(), tmp.width_list.items()) |p, w| {
+        try point_list.append(applyMat(transform_back, p), w);
     }
 }
 
@@ -749,8 +745,7 @@ fn renderCircle(
     const arc = if (large_arc) (std.math.tau - angle) else angle;
 
     var pos = sub(p0, center);
-    var i: usize = 0;
-    while (i < circle_divs - 1) : (i += 1) {
+    for (0..circle_divs - 1) |i| {
         const step_mat = rotationMat(@intToFloat(f32, i) * (if (turn_left) -arc else arc) / circle_divs);
         const point = add(applyMat(step_mat, pos), center);
 
@@ -918,7 +913,7 @@ const Painter = struct {
                     // free after https://stackoverflow.com/a/17490923
 
                     var j = points.len - 1;
-                    for (points) |p0, i| {
+                    for (points, 0..) |p0, i| {
                         defer j = i;
                         const p1 = points[j];
 
@@ -1130,7 +1125,7 @@ fn lerp(a: f32, b: f32, x: f32) f32 {
 
 fn lerpAndReduce(comptime n: comptime_int, vals: [n]f32, f: f32) [n - 1]f32 {
     var result: [n - 1]f32 = undefined;
-    for (result) |*r, i| {
+    for (&result, 0..) |*r, i| {
         r.* = lerp(vals[i + 0], vals[i + 1], f);
     }
     return result;

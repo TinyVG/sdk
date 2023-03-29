@@ -302,7 +302,7 @@ pub fn parse(allocator: std.mem.Allocator, source: []const u8, writer: anytype) 
         }
 
         fn matchAtom(slice: []const u8) ?usize {
-            for (slice) |c, i| {
+            for (slice, 0..) |c, i| {
                 if (c == ')' or c == '(' or std.ascii.isWhitespace(c))
                     return i;
             }
