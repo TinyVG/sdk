@@ -34,7 +34,7 @@ pub fn build(b: *std.Build) !void {
     });
     initNativeLibrary(static_native_lib, tvg);
     if (install_lib) {
-        static_native_lib.install();
+        b.installArtifact(static_native_lib);
     }
 
     const dynamic_lib_name = if (target.isWindows())
@@ -50,7 +50,7 @@ pub fn build(b: *std.Build) !void {
     });
     initNativeLibrary(dynamic_native_lib, tvg);
     if (install_lib) {
-        dynamic_native_lib.install();
+        b.installArtifact(dynamic_native_lib);
     }
 
     if (install_include) {
@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) !void {
     render.addModule("tvg", tvg);
     render.addModule("args", args);
     if (install_bin) {
-        render.install();
+        b.installArtifact(render);
     }
 
     const text = b.addExecutable(.{
@@ -80,7 +80,7 @@ pub fn build(b: *std.Build) !void {
     text.addModule("args", args);
     text.addModule("ptk", ptk);
     if (install_bin) {
-        text.install();
+        b.installArtifact(text);
     }
 
     const ground_truth_generator = b.addExecutable(.{
@@ -172,8 +172,9 @@ pub fn build(b: *std.Build) !void {
     polyfill.addModule("tvg", tvg);
 
     if (install_www) {
-        polyfill.install();
-        polyfill.install_step.?.dest_dir = www_folder;
+        var artifact_install = b.addInstallArtifact(polyfill);
+        artifact_install.dest_dir  = www_folder;
+        b.getInstallStep().dependOn(&artifact_install.step);
     }
 
     const copy_stuff = b.addInstallFileWithDir(.{ .path = "src/polyfill/tinyvg.js" }, www_folder, "tinyvg.js");
