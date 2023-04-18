@@ -7,20 +7,15 @@ fn initNativeLibrary(lib: *std.build.CompileStep, tvg: *std.Build.Module) void {
 }
 
 pub fn build(b: *std.Build) !void {
-    const ptk = b.createModule(.{
-        .source_file = .{ .path = "vendor/parser-toolkit/src/main.zig" },
-    });
-
+    const ptk_dep = b.dependency("ptk", .{});
+    const ptk = ptk_dep.module("parser-toolkit");
     // TinyVG package
     const tvg = b.addModule("tvg", .{
         .source_file = .{ .path = "src/lib/tinyvg.zig" },
         .dependencies = &.{.{ .name = "ptk", .module = ptk }},
     });
-
-    const args = b.createModule(.{
-        .source_file = .{ .path = "vendor/zig-args/args.zig" },
-    });
-
+    const args_dep = b.dependency("args", .{});
+    const args = args_dep.module("args");
     const www_folder = std.build.InstallDir{ .custom = "www" };
 
     const install_include = b.option(bool, "install-include", "Installs the include directory") orelse true;
