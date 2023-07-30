@@ -120,7 +120,7 @@ pub fn main() !u8 {
             tvg.rendering.SizeHint{ .size = tvg.rendering.Size{ .width = geom.width, .height = geom.height } }
         else
             .inherit,
-        @intToEnum(tvg.rendering.AntiAliasing, super_scale),
+        @enumFromInt(super_scale),
         source_file.reader(),
     );
     defer image.deinit(allocator);
@@ -161,7 +161,7 @@ fn dumpTga(src_writer: anytype, width: u16, height: u16, pixels: []const tvg.ren
 
     const image_id = "Hello, TGA!";
 
-    try writer.writeIntLittle(u8, @intCast(u8, image_id.len));
+    try writer.writeIntLittle(u8, @as(u8, @intCast(image_id.len)));
     try writer.writeIntLittle(u8, 0); // color map type = no color map
     try writer.writeIntLittle(u8, 2); // image type = uncompressed true-color image
     // color map spec
