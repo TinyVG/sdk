@@ -3,12 +3,12 @@
     .version = "0.0.1",
     .dependencies = .{
         .args = .{
-            .url = "https://github.com/MasterQ32/zig-args/archive/cce1b8987723c155d1fa61c4e6cac717074a2e74.tar.gz",
-            .hash = "122087f17682383feb354fecb2505788fdced06639f34e750cf641909fc6dcd76801",
+            .url = "https://github.com/MasterQ32/zig-args/archive/91d1e89fb89a4d01dec7c9aec95b0a324080ebcc.tar.gz",
+            .hash = "12203d04cafc97f952d74cdb077e74c0ab3414f9f6b5fbd159112c62bfa584a0dbed",
         },
         .ptk = .{
-            .url = "https://github.com/MasterQ32/parser-toolkit/archive/92c2875f2f91bf2a22b2be89b47ef0c3732f4812.tar.gz",
-            .hash = "1220265768f85ae009c6c20fbcabda75f4caacbd7efc0945dc92d3cec363a84e1329",
+            .url = "https://github.com/MasterQ32/parser-toolkit/archive/6238b7c6893582fb56f39676a090b1af1226fe1a.tar.gz",
+            .hash = "1220cf55c10add71a9cd2591dbe118ffa9a9198e21069e440fae1f6e3eef6f274733",
         },
     },
 }

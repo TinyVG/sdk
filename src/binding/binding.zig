@@ -24,7 +24,7 @@ fn renderBitmap(data: []const u8, src_anti_alias: c.tinyvg_AntiAlias, width: u32
         tvg.rendering.SizeHint{ .width = width }
     else
         tvg.rendering.SizeHint{ .size = .{ .width = width, .height = height } };
-    var anti_alias = @intToEnum(tvg.rendering.AntiAliasing, src_anti_alias);
+    var anti_alias: tvg.rendering.AntiAliasing = @enumFromInt(src_anti_alias);
 
     var image = try tvg.rendering.renderBuffer(
         temp_mem.allocator(),
