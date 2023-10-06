@@ -2,7 +2,7 @@ const std = @import("std");
 
 fn initNativeLibrary(lib: *std.build.CompileStep, tvg: *std.Build.Module) void {
     lib.addModule("tvg", tvg);
-    lib.addIncludePath("src/binding/include");
+    lib.addIncludePath(.{ .path = "src/binding/include" });
     lib.bundle_compiler_rt = true;
 }
 
@@ -121,8 +121,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
-        const tvg_tests = b.addTest(.{ .root_source_file = tvg.source_file });
-        tvg_tests.setMainPkgPath("src");
+        const tvg_tests = b.addTest(.{ .root_source_file = tvg.source_file, .main_pkg_path = .{ .path = "src" } });
         var tvg_deps = tvg.dependencies.iterator();
         while (tvg_deps.next()) |entry| {
             tvg_tests.addModule(entry.key_ptr.*, entry.value_ptr.*);
@@ -133,8 +132,8 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
         });
         static_binding_test.linkLibC();
-        static_binding_test.addIncludePath("src/binding/include");
-        static_binding_test.addCSourceFile("examples/usage.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
+        static_binding_test.addIncludePath(.{ .path = "src/binding/include" });
+        static_binding_test.addCSourceFile(.{ .file = .{ .path = "examples/usage.c" }, .flags = &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" } });
         static_binding_test.linkLibrary(static_native_lib);
 
         const dynamic_binding_test = b.addExecutable(.{
@@ -142,8 +141,8 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
         });
         dynamic_binding_test.linkLibC();
-        dynamic_binding_test.addIncludePath("src/binding/include");
-        dynamic_binding_test.addCSourceFile("examples/usage.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
+        dynamic_binding_test.addIncludePath(.{ .path = "src/binding/include" });
+        dynamic_binding_test.addCSourceFile(.{ .file = .{ .path = "examples/usage.c" }, .flags = &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" } });
         dynamic_binding_test.linkLibrary(dynamic_native_lib);
 
         const static_binding_test_run = b.addRunArtifact(static_binding_test);
@@ -172,8 +171,8 @@ pub fn build(b: *std.Build) !void {
     polyfill.addModule("tvg", tvg);
 
     if (install_www) {
-        var artifact_install = b.addInstallArtifact(polyfill);
-        artifact_install.dest_dir  = www_folder;
+        var artifact_install = b.addInstallArtifact(polyfill, .{});
+        artifact_install.dest_dir = www_folder;
         b.getInstallStep().dependOn(&artifact_install.step);
     }
 
