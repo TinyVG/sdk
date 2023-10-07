@@ -12,7 +12,7 @@ This SDK enables you to work with the [TinyVG](https://tinyvg.tech/) vector grap
 
 ## Building
 
-The SDK is implemented with [Zig](https://ziglang.org/) and [dotnet 5](https://dotnet.microsoft.com/en-us/). Until Zig 1.0 this repo tracks Zig `master` branch.
+The SDK is implemented with [Zig](https://ziglang.org/) 0.11.0 and [dotnet 5](https://dotnet.microsoft.com/en-us/).
 
 To build the SDK (except `svg2tvgt`), do this:
 
