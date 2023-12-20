@@ -23,12 +23,12 @@ jobs:
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: v0.11.0
+          version: master
 
       - name: Install dotnet sdk
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '6.0.x'
 
       - name: Compile Tools
         run: zig build install

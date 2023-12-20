@@ -241,7 +241,7 @@ pub fn writeEverything(src_writer: anytype, range: tvg.Range) !void {
         Emitter.emitOutlineFillPath,
     };
 
-    var style_base = [_]tvg.Style{
+    const style_base = [_]tvg.Style{
         tvg.Style{ .flat = 0 },
         tvg.Style{ .linear = .{
             .point_0 = tvg.point(0, 0),

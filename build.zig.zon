@@ -1,14 +1,15 @@
 .{
     .name = "tinyvg",
     .version = "0.0.1",
+    .paths = .{""},
     .dependencies = .{
         .args = .{
-            .url = "https://github.com/MasterQ32/zig-args/archive/91d1e89fb89a4d01dec7c9aec95b0a324080ebcc.tar.gz",
-            .hash = "12203d04cafc97f952d74cdb077e74c0ab3414f9f6b5fbd159112c62bfa584a0dbed",
+            .url = "https://github.com/MasterQ32/zig-args/archive/3797c1473b48e445d721d40c8fbbe9a7422095ae.tar.gz",
+            .hash = "122012fa395ee8ac94592f3a535ed3899a4485e96ee3d4ec8f82c761bf304b34b870",
         },
         .ptk = .{
-            .url = "https://github.com/MasterQ32/parser-toolkit/archive/6238b7c6893582fb56f39676a090b1af1226fe1a.tar.gz",
-            .hash = "1220cf55c10add71a9cd2591dbe118ffa9a9198e21069e440fae1f6e3eef6f274733",
+            .url = "https://github.com/MasterQ32/parser-toolkit/archive/5416f1ff721cbfbf91397e557fc400e004804361.tar.gz",
+            .hash = "12207450343aa027d9478b85b67b2f390360851d17dbf00e95376d133140276479c2",
         },
     },
 }
