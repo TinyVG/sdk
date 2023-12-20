@@ -96,7 +96,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     const generate_ground_truth = b.addRunArtifact(ground_truth_generator);
-    generate_ground_truth.cwd = b.cache_root.path;
+    generate_ground_truth.cwd = .{ .cwd_relative = b.cache_root.path.? };
 
     const gen_gt_step = b.step("generate", "Regenerates the ground truth data.");
 
@@ -111,14 +111,14 @@ pub fn build(b: *std.Build) !void {
         tvg_conversion.addArg("2");
         tvg_conversion.addArg("--output");
         tvg_conversion.addArg(file[0 .. file.len - 3] ++ "tga");
-        tvg_conversion.cwd = b.cache_root.path;
+        tvg_conversion.cwd = .{ .cwd_relative = b.cache_root.path.? };
         tvg_conversion.step.dependOn(&generate_ground_truth.step);
 
         const tvgt_conversion = b.addRunArtifact(text);
         tvgt_conversion.addArg(file);
         tvgt_conversion.addArg("--output");
         tvgt_conversion.addArg(file[0 .. file.len - 3] ++ "tvgt");
-        tvgt_conversion.cwd = b.cache_root.path;
+        tvgt_conversion.cwd = .{ .cwd_relative = b.cache_root.path.? };
         tvgt_conversion.step.dependOn(&generate_ground_truth.step);
 
         gen_gt_step.dependOn(&tvgt_conversion.step);
@@ -154,10 +154,10 @@ pub fn build(b: *std.Build) !void {
         dynamic_binding_test.linkLibrary(dynamic_native_lib);
 
         const static_binding_test_run = b.addRunArtifact(static_binding_test);
-        static_binding_test_run.cwd = b.cache_root.path;
+        static_binding_test_run.cwd = .{ .cwd_relative = b.cache_root.path.? };
 
         const dynamic_binding_test_run = b.addRunArtifact(dynamic_binding_test);
-        dynamic_binding_test_run.cwd = b.cache_root.path;
+        dynamic_binding_test_run.cwd = .{ .cwd_relative = b.cache_root.path.? };
 
         const test_step = b.step("test", "Runs all tests");
         test_step.dependOn(&b.addRunArtifact(tvg_tests).step);
