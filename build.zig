@@ -9,11 +9,13 @@ fn initNativeLibrary(lib: *std.build.CompileStep, tvg: *std.Build.Module) void {
 pub fn build(b: *std.Build) !void {
     const ptk_dep = b.dependency("ptk", .{});
     const ptk = ptk_dep.module("parser-toolkit");
+
     // TinyVG package
     const tvg = b.addModule("tvg", .{
         .source_file = .{ .path = "src/lib/tinyvg.zig" },
         .dependencies = &.{.{ .name = "ptk", .module = ptk }},
     });
+
     const args_dep = b.dependency("args", .{});
     const args = args_dep.module("args");
     const www_folder = std.build.InstallDir{ .custom = "www" };
@@ -85,10 +87,13 @@ pub fn build(b: *std.Build) !void {
 
     const ground_truth_generator = b.addExecutable(.{
         .name = "ground-truth-generator",
-        .root_source_file = .{ .path = "src/data/ground-truth.zig" },
+        .root_source_file = .{ .path = "src/lib/data/ground-truth.zig" },
+        .main_pkg_path = .{ .path = "src/lib" },
         .optimize = optimize,
     });
-    ground_truth_generator.addModule("tvg", tvg);
+    for (tvg.dependencies.keys(), tvg.dependencies.values()) |name, mod| {
+        ground_truth_generator.addModule(name, mod);
+    }
 
     const generate_ground_truth = b.addRunArtifact(ground_truth_generator);
     generate_ground_truth.cwd = b.cache_root.path;
@@ -121,10 +126,13 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
-        const tvg_tests = b.addTest(.{ .root_source_file = tvg.source_file, .main_pkg_path = .{ .path = "src" } });
-        var tvg_deps = tvg.dependencies.iterator();
-        while (tvg_deps.next()) |entry| {
-            tvg_tests.addModule(entry.key_ptr.*, entry.value_ptr.*);
+        const tvg_tests = b.addTest(.{
+            .root_source_file = tvg.source_file,
+            .optimize = optimize,
+            .main_pkg_path = .{ .path = "src" },
+        });
+        for (tvg.dependencies.keys(), tvg.dependencies.values()) |name, mod| {
+            tvg_tests.addModule(name, mod);
         }
 
         const static_binding_test = b.addExecutable(.{
@@ -152,7 +160,7 @@ pub fn build(b: *std.Build) !void {
         dynamic_binding_test_run.cwd = b.cache_root.path;
 
         const test_step = b.step("test", "Runs all tests");
-        test_step.dependOn(&tvg_tests.step);
+        test_step.dependOn(&b.addRunArtifact(tvg_tests).step);
         test_step.dependOn(&static_binding_test_run.step);
         test_step.dependOn(&dynamic_binding_test_run.step);
     }

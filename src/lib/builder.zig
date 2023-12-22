@@ -405,7 +405,7 @@ const ReducedCount = enum(u6) {
     _,
 };
 
-const ground_truth = @import("../data/ground-truth.zig");
+const ground_truth = @import("data/ground-truth.zig");
 
 test "encode shield (default range, scale 1/256)" {
     var buffer: [1024]u8 = undefined;

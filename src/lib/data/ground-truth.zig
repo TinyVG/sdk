@@ -1,5 +1,5 @@
 const std = @import("std");
-const tvg = if (@import("builtin").is_test) @import("../lib/tinyvg.zig") else @import("tvg");
+const tvg = @import("../tinyvg.zig");
 
 // pub const everything_16 = blk: {
 //     @setEvalBranchQuota(100_000);
@@ -58,7 +58,7 @@ pub fn main() !void {
     }
 }
 
-/// This function renders a new 
+/// This function renders a new
 pub fn writeEverything(src_writer: anytype, range: tvg.Range) !void {
     var writer = tvg.builder.create(src_writer);
     const Writer = @TypeOf(writer);

@@ -666,7 +666,7 @@ test "coverage test" {
     var source_buf: [2048]u8 = undefined;
     var stream = std.io.fixedBufferStream(&source_buf);
 
-    @import("../data/ground-truth.zig").writeEverything(stream.writer(), .default) catch unreachable;
+    @import("data/ground-truth.zig").writeEverything(stream.writer(), .default) catch unreachable;
 
     try stream.seekTo(0);
 
