@@ -2192,20 +2192,20 @@ public class SvgPathParser
     {
       while (true)
       {
-        c = PeekAny("0123456789.");
+        c = PeekAny("0123456789.eE+-");
         if (c == null)
           return ParseFloat(begin.Slice());
-        AcceptChar("0123456789.");
+        AcceptChar("0123456789.eE+-");
         if (c.Value == '.')
           break;
       }
     }
     while (true)
     {
-      c = PeekAny("0123456789");
+      c = PeekAny("0123456789eE+-");
       if (c == null)
         return ParseFloat(begin.Slice());
-      AcceptChar("0123456789");
+      AcceptChar("0123456789eE+-");
     }
   }
 
