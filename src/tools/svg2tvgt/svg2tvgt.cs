@@ -1633,6 +1633,7 @@ public class SvgPathParser
   int char_offset = 0;
 
   PointF current_position = new PointF(0, 0);
+  PointF? path_start = null;
   PointF? stored_control_point = null;
 
   private SvgPathParser(string str, IPathRenderer renderer)
@@ -1836,6 +1837,9 @@ public class SvgPathParser
   void ParseClosePath()
   {
     AcceptChar('Z', 'z');
+    if (path_start == null) throw new InvalidOperationException("ClosePath detected without MoveTo");
+    current_position = (PointF)path_start;
+    path_start = null;
     renderer.ClosePath();
     SkipWhitespace();
   }
@@ -1852,6 +1856,8 @@ public class SvgPathParser
       var p = MoveCursor(pair, relative);
       if (first)
       {
+        if (path_start != null) throw new InvalidOperationException("New MoveTo detected without ClosePath");
+        path_start = current_position;
         renderer.MoveTo(p);
       }
       else
