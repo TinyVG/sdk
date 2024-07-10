@@ -21,9 +21,9 @@ jobs:
           submodules: 'recursive'
 
       - name: Install Zig
-        uses: goto-bus-stop/setup-zig@v2
+        uses: mlugg/setup-zig@v1
         with:
-          version: v0.11.0
+          version: 0.13.0
 
       - name: Install dotnet sdk
         uses: actions/setup-dotnet@v4

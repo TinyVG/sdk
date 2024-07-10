@@ -3,12 +3,21 @@
     .version = "0.0.1",
     .dependencies = .{
         .args = .{
-            .url = "https://github.com/MasterQ32/zig-args/archive/91d1e89fb89a4d01dec7c9aec95b0a324080ebcc.tar.gz",
-            .hash = "12203d04cafc97f952d74cdb077e74c0ab3414f9f6b5fbd159112c62bfa584a0dbed",
+            .url = "https://github.com/ikskuh/zig-args/archive/03af1b6c5bfda9646a562c861055024daed5b238.tar.gz",
+            .hash = "1220904d2fdcd970dd0d216211d092eb3ef6da01117163cc9393ab845a1d66c029d9",
         },
         .ptk = .{
-            .url = "https://github.com/MasterQ32/parser-toolkit/archive/6238b7c6893582fb56f39676a090b1af1226fe1a.tar.gz",
-            .hash = "1220cf55c10add71a9cd2591dbe118ffa9a9198e21069e440fae1f6e3eef6f274733",
+            .url = "https://github.com/ikskuh/parser-toolkit/archive/9349d087a3216ebea27cc99b5b4bd8affe234816.tar.gz",
+            .hash = "12206f0ade18be8db985f6a688ca7ec9ffdbb95f033c8db91760b0d13cfe27618b61",
         },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "docs",
+        "examples",
+        "LICENSE",
+        "README.md",
+        "src",
     },
 }

@@ -16,7 +16,7 @@ fn renderBitmap(data: []const u8, src_anti_alias: c.tinyvg_AntiAlias, width: u32
     var temp_mem = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer temp_mem.deinit();
 
-    var size_hint: tvg.rendering.SizeHint = if (width == 0 and height == 0)
+    const size_hint: tvg.rendering.SizeHint = if (width == 0 and height == 0)
         .inherit
     else if (width == 0)
         tvg.rendering.SizeHint{ .height = height }
@@ -24,7 +24,7 @@ fn renderBitmap(data: []const u8, src_anti_alias: c.tinyvg_AntiAlias, width: u32
         tvg.rendering.SizeHint{ .width = width }
     else
         tvg.rendering.SizeHint{ .size = .{ .width = width, .height = height } };
-    var anti_alias: tvg.rendering.AntiAliasing = @enumFromInt(src_anti_alias);
+    const anti_alias: tvg.rendering.AntiAliasing = @enumFromInt(src_anti_alias);
 
     var image = try tvg.rendering.renderBuffer(
         temp_mem.allocator(),

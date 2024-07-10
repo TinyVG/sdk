@@ -6,7 +6,7 @@ fn printUsage(stream: anytype) !void {
     try stream.writeAll(
         \\tvg-render [-o <file.tga>] [-g <geometry>] [-a] [-s <scale>] <input>
         \\
-        \\Renders a TinyVG vector graphic into a TGA file. 
+        \\Renders a TinyVG vector graphic into a TGA file.
         \\
         \\Options:
         \\  -h, --help             Prints this text.
@@ -136,7 +136,7 @@ pub fn main() !u8 {
         var dest_file: std.fs.File = if (write_stdout)
             std.io.getStdIn()
         else blk: {
-            var out_name = cli.options.output orelse try std.mem.concat(allocator, u8, &[_][]const u8{
+            const out_name = cli.options.output orelse try std.mem.concat(allocator, u8, &[_][]const u8{
                 cli.positionals[0][0..(cli.positionals[0].len - std.fs.path.extension(cli.positionals[0]).len)],
                 ".tga",
             });
@@ -146,7 +146,7 @@ pub fn main() !u8 {
         defer if (!read_stdin)
             dest_file.close();
 
-        var writer = dest_file.writer();
+        const writer = dest_file.writer();
         try dumpTga(writer, width, height, image.pixels);
     }
 
@@ -161,20 +161,20 @@ fn dumpTga(src_writer: anytype, width: u16, height: u16, pixels: []const tvg.ren
 
     const image_id = "Hello, TGA!";
 
-    try writer.writeIntLittle(u8, @as(u8, @intCast(image_id.len)));
-    try writer.writeIntLittle(u8, 0); // color map type = no color map
-    try writer.writeIntLittle(u8, 2); // image type = uncompressed true-color image
+    try writer.writeInt(u8, @as(u8, @intCast(image_id.len)), .little);
+    try writer.writeInt(u8, 0, .little); // color map type = no color map
+    try writer.writeInt(u8, 2, .little); // image type = uncompressed true-color image
     // color map spec
-    try writer.writeIntLittle(u16, 0); // first index
-    try writer.writeIntLittle(u16, 0); // length
-    try writer.writeIntLittle(u8, 0); // number of bits per pixel
+    try writer.writeInt(u16, 0, .little); // first index
+    try writer.writeInt(u16, 0, .little); // length
+    try writer.writeInt(u8, 0, .little); // number of bits per pixel
     // image spec
-    try writer.writeIntLittle(u16, 0); // x origin
-    try writer.writeIntLittle(u16, 0); // y origin
-    try writer.writeIntLittle(u16, width); // width
-    try writer.writeIntLittle(u16, height); // height
-    try writer.writeIntLittle(u8, 32); // bits per pixel
-    try writer.writeIntLittle(u8, 8 | 0x20); // 0…3 => alpha channel depth = 8, 4…7 => direction=top left
+    try writer.writeInt(u16, 0, .little); // x origin
+    try writer.writeInt(u16, 0, .little); // y origin
+    try writer.writeInt(u16, width, .little); // width
+    try writer.writeInt(u16, height, .little); // height
+    try writer.writeInt(u8, 32, .little); // bits per pixel
+    try writer.writeInt(u8, 8 | 0x20, .little); // 0…3 => alpha channel depth = 8, 4…7 => direction=top left
 
     try writer.writeAll(image_id);
     try writer.writeAll(""); // color map data \o/
