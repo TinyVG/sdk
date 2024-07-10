@@ -2190,29 +2190,40 @@ public class SvgPathParser
     return ParseNumberGeneric(false);
   }
 
+  bool ScanOne(string s)
+  {
+    if (char_offset < path_text.Length && s.Contains(path_text[char_offset])) {
+      char_offset++;
+      return true;
+    }
+    return false;
+  }
+
+  delegate bool IncludeCallback(char c);
+
+  void ScanWhile(IncludeCallback cb)
+  {
+    while (char_offset < path_text.Length) {
+      if (!cb(path_text[char_offset]))
+        return;
+      char_offset++;
+    }
+  }
+
   float ParseNumberGeneric(bool allow_sign)
   {
     var begin = Save();
-    char? c = AcceptChar("0123456789." + (allow_sign ? "+-" : ""));
-    if (c != '.')
-    {
-      while (true)
-      {
-        c = PeekAny("0123456789.eE+-");
-        if (c == null)
-          return ParseFloat(begin.Slice());
-        AcceptChar("0123456789.eE+-");
-        if (c.Value == '.')
-          break;
-      }
+
+    char first = AcceptChar("0123456789." + (allow_sign ? "+-" : ""));
+    ScanWhile(char.IsDigit);
+    if (first != '.' && ScanOne(".")) {
+        ScanWhile(char.IsDigit);
     }
-    while (true)
-    {
-      c = PeekAny("0123456789eE+-");
-      if (c == null)
-        return ParseFloat(begin.Slice());
-      AcceptChar("0123456789eE+-");
+    if (ScanOne("eE")) {
+        ScanOne("+-");
+        ScanWhile(char.IsDigit);
     }
+    return ParseFloat(begin.Slice());
   }
 
   static float ParseFloat(string str)
