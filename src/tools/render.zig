@@ -14,6 +14,7 @@ fn printUsage(stream: anytype) !void {
         \\  -g, --geometry <geom>  Specifies the output geometry of the image. Has the format <width>x<height>.
         \\      --width <width>    Specifies the output width to be <width>. Height will be derived via aspect ratio.
         \\      --height <height>  Specifies the output height to be <height>. Width will be derived via aspect ratio.
+        \\      --bounded <geom>   Output's maximum size within the given <width>x<height> that maintains the aspect ratio.
         \\  -s, --super-sampling   Sets the super-sampling size for the image. Use 1 for no super sampling and 16 for very high quality.
         \\  -a, --anti-alias       Sets the super-sampling size to 4. This is usually decent enough for most images.
         \\
@@ -28,6 +29,10 @@ const CliOptions = struct {
     geometry: ?Geometry = null,
     width: ?u32 = null,
     height: ?u32 = null,
+    bounded: ?Geometry = null,
+
+    max_width: ?u32 = null,
+    max_height: ?u32 = null,
 
     @"anti-alias": bool = false,
     @"super-sampling": ?u32 = null,
@@ -69,8 +74,9 @@ pub fn main() !u8 {
     if (cli.options.width != null) cnt += 1;
     if (cli.options.height != null) cnt += 1;
     if (cli.options.geometry != null) cnt += 1;
+    if (cli.options.bounded != null) cnt += 1;
     if (cnt > 1) {
-        try stderr.writeAll("--width, --height and --geometry are mutual exclusive!\n");
+        try stderr.writeAll("--width, --height, --geometry and --bounded are mutually exclusive!\n");
         try printUsage(stderr);
         return 1;
     }
@@ -118,6 +124,8 @@ pub fn main() !u8 {
             tvg.rendering.SizeHint{ .height = height }
         else if (cli.options.geometry) |geom|
             tvg.rendering.SizeHint{ .size = tvg.rendering.Size{ .width = geom.width, .height = geom.height } }
+        else if (cli.options.bounded) |b|
+            tvg.rendering.SizeHint{ .bounded = .{ .width = b.width, .height = b.height } }
         else
             .inherit,
         @enumFromInt(super_scale),

@@ -57,6 +57,9 @@ pub fn renderStream(
             .width = (height * parser.header.width) / parser.header.height,
             .height = height,
         },
+        .bounded => |bounds| calcBoundedSize(
+            bounds, parser.header.width, parser.header.height
+        ),
     };
 
     const super_scale: u32 = if (anti_alias) |factor|
@@ -226,7 +229,24 @@ pub const SizeHint = union(enum) {
     width: u32,
     height: u32,
     size: Size,
+    /// The maximum size that maintains the aspect ratio and fits within the given bounds
+    bounded: Size,
 };
+
+fn calcBoundedSize(bounds: Size, width: u32, height: u32) Size {
+    const width_f32: f32 = @floatFromInt(width);
+    const height_f32: f32 = @floatFromInt(height);
+    const width_mult = @as(f32, @floatFromInt(bounds.width)) / width_f32;
+    const height_mult = @as(f32, @floatFromInt(bounds.height)) / height_f32;
+    if (width_mult >= height_mult) return .{
+        .width = @intFromFloat(@trunc(width_f32 * height_mult)),
+        .height = bounds.height,
+    };
+    return .{
+        .width = bounds.width,
+        .height = @intFromFloat(@trunc(height_f32 * width_mult)),
+    };
+}
 
 pub const Size = struct {
     width: u32,
