@@ -114,6 +114,7 @@ pub fn main() !u8 {
     }
 
     // TODO: Render here
+    var buffered_reader = std.io.bufferedReader(source_file.reader());
 
     var image = try tvg.rendering.renderStream(
         allocator,
@@ -129,7 +130,7 @@ pub fn main() !u8 {
         else
             .inherit,
         @enumFromInt(super_scale),
-        source_file.reader(),
+        buffered_reader.reader(),
     );
     defer image.deinit(allocator);
 
