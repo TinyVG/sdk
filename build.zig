@@ -13,7 +13,7 @@ pub fn build(b: *std.Build) !void {
     // TinyVG package
     const tvg = b.addModule("tvg", .{
         .root_source_file = b.path("src/lib/tinyvg.zig"),
-        .imports = &.{ .{ .name = "ptk", .module = ptk }},
+        .imports = &.{.{ .name = "ptk", .module = ptk }},
     });
 
     const args_dep = b.dependency("args", .{});
@@ -88,7 +88,7 @@ pub fn build(b: *std.Build) !void {
     const ground_truth_generator = b.addExecutable(.{
         .name = "ground-truth-generator",
         .root_source_file = b.path("src/lib/ground-truth.zig"),
-        .target = b.host,
+        .target = target,
         .optimize = optimize,
     });
     for (tvg.import_table.keys(), tvg.import_table.values()) |name, mod| {
@@ -180,7 +180,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     polyfill.entry = .disabled;
-    polyfill.root_module.export_symbol_names = &.{ "convertToSvg" };
+    polyfill.root_module.export_symbol_names = &.{"convertToSvg"};
     polyfill.root_module.strip = (optimize != .Debug);
     polyfill.root_module.addImport("tvg", tvg);
 

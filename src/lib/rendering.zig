@@ -57,9 +57,7 @@ pub fn renderStream(
             .width = (height * parser.header.width) / parser.header.height,
             .height = height,
         },
-        .bounded => |bounds| calcBoundedSize(
-            bounds, parser.header.width, parser.header.height
-        ),
+        .bounded => |bounds| calcBoundedSize(bounds, parser.header.width, parser.header.height),
     };
 
     const super_scale: u32 = if (anti_alias) |factor|
@@ -276,7 +274,7 @@ pub const Image = struct {
 };
 
 pub fn isFramebuffer(comptime T: type) bool {
-    const FbType = if (@typeInfo(T) == .Pointer)
+    const FbType = if (@typeInfo(T) == .pointer)
         std.meta.Child(T)
     else
         T;
@@ -1196,7 +1194,7 @@ pub fn FixedBufferList(comptime T: type, comptime N: usize) type {
 
         pub fn popBack(self: *Self) ?T {
             if (self.large) |*large| {
-                return large.popOrNull();
+                return large.pop();
             }
 
             if (self.count == 0)
