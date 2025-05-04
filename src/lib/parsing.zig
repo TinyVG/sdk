@@ -4,6 +4,7 @@
 
 const std = @import("std");
 const tvg = @import("tinyvg.zig");
+const assert = std.debug.assert;
 
 pub const Header = struct {
     version: u8,
@@ -211,7 +212,7 @@ pub fn Parser(comptime Reader: type) type {
             try self.temp_buffer.resize(@sizeOf(T) * length);
 
             const items = std.mem.bytesAsSlice(T, self.temp_buffer.items[0..(@sizeOf(T) * length)]);
-            std.debug.assert(items.len == length);
+            assert(items.len == length);
             return items;
         }
 
@@ -229,14 +230,21 @@ pub fn Parser(comptime Reader: type) type {
             // T2 alignment could be larger than T1
             const offset = std.mem.alignForward(usize, @sizeOf(T1) * length1, @alignOf(T2));
 
-            const result = .{
-                .first = std.mem.bytesAsSlice(T1, self.temp_buffer.items[0 .. @sizeOf(T1) * length1]),
-                .second = @as([]T2, @alignCast(std.mem.bytesAsSlice(T2, self.temp_buffer.items[offset..][0 .. @sizeOf(T2) * length2]))),
-            };
+            const rfirst: []T1 = std.mem.bytesAsSlice(
+                T1,
+                self.temp_buffer.items[0 .. @sizeOf(T1) * length1],
+            );
+            const rsecond: []T2 = @as(
+                []T2,
+                @alignCast(std.mem.bytesAsSlice(
+                    T2,
+                    self.temp_buffer.items[offset..][0 .. @sizeOf(T2) * length2],
+                )),
+            );
 
-            std.debug.assert(result.first.len == length1);
-            std.debug.assert(result.second.len == length2);
-            return result;
+            assert(rfirst.len == length1);
+            assert(rsecond.len == length2);
+            return .{ .first = rfirst, .second = rsecond };
         }
 
         fn ValAndSize(comptime T: type) type {
@@ -421,7 +429,7 @@ pub fn Parser(comptime Reader: type) type {
 
         fn readPath(self: *Self, path_length: usize) !Path {
             var segment_lengths: [1024]usize = undefined;
-            std.debug.assert(path_length <= segment_lengths.len);
+            assert(path_length <= segment_lengths.len);
 
             var total_node_count: usize = 0;
 
@@ -455,8 +463,8 @@ pub fn Parser(comptime Reader: type) type {
 
                 segment_start += segment_len;
             }
-            std.debug.assert(buffers.first.len == path_length);
-            std.debug.assert(segment_start == total_node_count);
+            assert(buffers.first.len == path_length);
+            assert(segment_start == total_node_count);
 
             return Path{
                 .segments = buffers.first,
@@ -582,7 +590,7 @@ pub fn Parser(comptime Reader: type) type {
                 if ((byte & 0x80) == 0)
                     break;
                 byte_count += 1;
-                std.debug.assert(byte_count <= 5);
+                assert(byte_count <= 5);
             }
             return result;
         }
@@ -630,7 +638,7 @@ fn convertStyleType(value: u2) !StyleType {
 }
 
 fn MapZeroToMax(comptime T: type) type {
-    const info = @typeInfo(T).Int;
+    const info = @typeInfo(T).int;
     return std.meta.Int(.unsigned, info.bits + 1);
 }
 fn mapZeroToMax(value: anytype) MapZeroToMax(@TypeOf(value)) {

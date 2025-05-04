@@ -1,14 +1,15 @@
 .{
-    .name = "tinyvg",
+    .name = .tinyvg,
+    .fingerprint = 0x9f39022c50bcabd8,
     .version = "0.0.1",
     .dependencies = .{
         .args = .{
-            .url = "https://github.com/ikskuh/zig-args/archive/03af1b6c5bfda9646a562c861055024daed5b238.tar.gz",
-            .hash = "1220904d2fdcd970dd0d216211d092eb3ef6da01117163cc9393ab845a1d66c029d9",
+            .url = "https://github.com/ikskuh/zig-args/archive/9425b94c103a031777fdd272c555ce93a7dea581.zip",
+            .hash = "args-0.0.0-CiLiqv_NAAC97fGpk9hS2K681jkiqPsWP6w3ucb_ctGH",
         },
         .ptk = .{
-            .url = "https://github.com/ikskuh/parser-toolkit/archive/9349d087a3216ebea27cc99b5b4bd8affe234816.tar.gz",
-            .hash = "12206f0ade18be8db985f6a688ca7ec9ffdbb95f033c8db91760b0d13cfe27618b61",
+            .url = "https://github.com/ikskuh/parser-toolkit/archive/0d5e00d4830bca53d10fee5d562152f1329d5784.zip",
+            .hash = "parser_toolkit-0.1.0-baYGPS1CEwDuQk1W_5QEfKF_BWU5lN4qb8kVZoQ6Id9k",
         },
     },
     .paths = .{
