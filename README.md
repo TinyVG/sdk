@@ -11,6 +11,7 @@ This SDK enables you to work with the [TinyVG](https://tinyvg.tech/) vector grap
   - Format Conversion (SVG <-> TVG <-> TVGT)
 
 ## Building
+**Note**: builds with zig 0.14.0, needs dotnet 6 runtime, but builds fine with donet 9 sdk!
 
 The SDK is implemented with [Zig](https://ziglang.org/) 0.11.0 and [dotnet 6](https://dotnet.microsoft.com/en-us/).
 
